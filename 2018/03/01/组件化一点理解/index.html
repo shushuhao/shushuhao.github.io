@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/hexo-theme-huxblog/img/favicon.ico">
+
+    <title>
+        
+          组件化的一点理解 - 树树
+        
+    </title>
+
+    <link rel="canonical" href="http://kaijun.rocks/hexo-theme-huxblog/hexo-theme-huxblog/2018/03/01/组件化一点理解/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/hexo-theme-huxblog/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/hexo-theme-huxblog/css/hux-blog.min.css">
+
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/hexo-theme-huxblog/css/highlight.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/hexo-theme-huxblog/">树树</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/hexo-theme-huxblog/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/hexo-theme-huxblog/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/hexo-theme-huxblog/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/hexo-theme-huxblog/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://kaijun.rocks/hexo-theme-huxblog/hexo-theme-huxblog/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/hexo-theme-huxblog/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>组件化的一点理解</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Kaijun Chen on
+                        2018-03-01
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="浅谈组件封装（转载）"><a href="#浅谈组件封装（转载）" class="headerlink" title="浅谈组件封装（转载）"></a>浅谈组件封装（转载）</h1><p>  一般来说，我们在封装组件的时候，会先思考以下几点</p>
+<ul>
+<li>这个组件要做什么</li>
+<li>这个组件<strong>至少</strong>需要知道哪些信息</li>
+<li>这个组件会反馈哪些信息</li>
+</ul>
+<p>这个阶段，我们还不会考虑组件的具体实现，仅仅对其做抽象。我们要做的东西不仅仅是适用于单个项目的，而应该是通用的，可以适应大部分同种类需求的。</p>
+<h4 id="Scene-I"><a href="#Scene-I" class="headerlink" title="Scene I"></a>Scene I</h4><p>BA说，客户要在首页加个轮播。于是半天后设计师出了张图，看起来大概像这样：</p>
+<p>我们按照上面的思路，拆分一下这个需求。</p>
+<h3 id="这个组件要做什么"><a href="#这个组件要做什么" class="headerlink" title="这个组件要做什么"></a>这个组件要做什么</h3><p>显而易见的：</p>
+<blockquote>
+<p>1.展示多张图片</p>
+<p>2.可以向左向右翻页</p>
+<p>3.PageControl的状态会根据图片的滚动而相应改变</p>
+</blockquote>
+<p>隐含可能要做的：</p>
+<blockquote>
+<p>1.支持左右两侧无限循环滚动</p>
+<p>2.自动轮播</p>
+<p>3.支持手动滑动</p>
+<p>4.支持点击并进行相关的响应</p>
+<p>5.图片的缓存</p>
+</blockquote>
+<h3 id="这个组件至少需要知道哪些信息"><a href="#这个组件至少需要知道哪些信息" class="headerlink" title="这个组件至少需要知道哪些信息"></a>这个组件<strong>至少</strong>需要知道哪些信息</h3><p>一个封装得优秀的复杂度不高组件就像一个魔法盒子，只需要触发启动开关，就可以达到你期待的效果。极简的触发参数和条件是组件封装的精髓。在内容型App中，轮播图一般会用作推荐内容展示区域。在O2O类App中，轮播图一般会用作广告位。因此轮播区域图片的内容绝大多数都是动态的。在一般的C/S开发中，客户端要获取存储在服务器上的图片会获取它的URL,然后在需要的时候根据URL异步地加载这些图片。因此，我们找出了的轮播空间第一个必备条件：</p>
+<p><strong>一个图片URL地址数组。</strong></p>
+<pre><code>@property (nonatomic, strong) NSArray *imageURLs;/**&lt; 必须赋值。只要给这个imageURL赋值，会自动获取图片*/
+</code></pre><p>这个时候我们已经可以根据数组内的URL,数组内URL的数量，完成轮播效果了。但还不够完善。试想，当数组为空的时候，我们的轮播控件是一个什么状态？网络比较慢，图片还在加载中的时候，我们的轮播控件是什么状态？就目前来说—-空白一片。</p>
+<p>每个App都有每个App的设计，但无论如何谁也不会容忍首页最醒目的部分出现一大片空白，因此占位图是必须的。我们告诉我们的控件，“没有图片的时候别傻愣着，显示这张图”。必备条件二：</p>
+<p><strong>占位图</strong></p>
+<pre><code>@property (nonatomic, strong) UIImage *placeholder;/**&lt; 没有轮播图时的占位图*/
+</code></pre><p>有了以上信息我们的轮播控件已经可以在运行得比较好了。但是缺少了一定的定制性，能满足的需求面还不够广。比如说，让控件在需要自动轮播的地方自动轮播，在不需要自动轮播的地方保留无限滚动的特性，可以手动拨动？（之前有个产品提过这样的需求）比如说,这个控件是否应该提供可选的PageControl实现？依据设计师给的图不同，我们可能需要实现不同的PageControl，不管是颜色，布局，还是其可见隐藏都可能会有不同。这一部分复杂度不应该归到轮播控件中。但考虑到一些快速开发的需求,控件还是提供了一个默认选项。这些都是让控件变得更加可配置和灵活（同时也变得复杂）的可选信息。综上我们大概可以整理出以下属性：</p>
+<pre><code>@property (nonatomic,getter=isAutoMoving)      BOOL autoMoving;/**&lt; 是否自动轮播,默认为NO*/
+@property (nonatomic,getter=isShowPageControl) BOOL showPageControl;/**&lt; 是否展示默认的PageControl，默认为YES*/
+</code></pre><h3 id="这个组件会反馈哪些信息"><a href="#这个组件会反馈哪些信息" class="headerlink" title="这个组件会反馈哪些信息"></a>这个组件会反馈哪些信息</h3><p>上一点中，如果使用者需要自己实现PageControl，那么当前控件滚动到哪一页了，应该给出反馈。</p>
+<p>不论在O2O的App中，还是资讯类App中，用户点击轮播必定会有相对应的响应，例如之乎日报点击跳转到对应的文章，淘宝点击查看大图等。因此用户点击的信息也必须反馈出来，以让控制器根据用户的操作进行不同的响应。</p>
+<p>View层对Controller层的反馈一般有两种，一种是Target-Action，一种是Delegate。此处我们类似UITableView,给出一定的代理方法。遵循苹果的设计规范，让使用的开发者容易上手。</p>
+<pre><code>@protocol PSCarouselDelegate 
+@optional
+/**
+ *  告诉代理滚动到哪一页了
+ *
+ *  @param carousel self
+ *  @param page     已经计算好，直接使用即可
+ */
+- (void)carousel:(PSCarouselView *)carousel didMoveToPage:(NSUInteger)page;
+
+/**
+ *   告诉代理用户点击了某一页
+ *
+ *  @param carousel
+ *  @param index  imageURL的index  
+ */
+- (void)carousel:(PSCarouselView *)carousel didTouchPage:(NSUInteger)page;
+@end
+</code></pre><p>至此，轮播组件的架子已经明晰，剩下的就是如何实现，以及实现的时候需要考虑的一些细节。</p>
+<h2 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h2><h3 id="选择基类"><a href="#选择基类" class="headerlink" title="选择基类"></a>选择基类</h3><p>苹果的UIKit提供了非常多优秀的类，可以作为我们轮播视图的基类。根据以上的分析，我们根据直觉，立马可以联想到以下三个类： <code>UIPageViewController</code>、<code>UIScrollView</code>、<code>UICollectionView</code>。</p>
+<p><code>UIPageViewController</code>提供了非常好的翻页封装，仅需要指定翻页的方向，和子ViewController的数组，就可以提供类似轮播的功能。并且<code>UIPageViewController</code>提供了供翻页的接口和必要的反馈信息，定义在<code>UIPageViewControllerDelegate</code>协议中。用UIPageViewController,我们只需要将每个轮播页封装成一个仅包含一个UIImageView的ViewController，并将其设为UIPageViewController的ViewControllers，并实现它的代理方法就很容易实现我们的轮播图。</p>
+<p><code>UIScrollView</code>提供了最基本的滚动封装。采用UIScrollView作为基类，需要自己根据图片的数量计算ContentSize,并在ScrollView相对应的代理方法中，根据Frame相关信息来计算页码，会比UIPageViewController稍微复杂。但好在，它是一个<code>View</code>。</p>
+<p><code>UICollectionView</code>做为UIScrollView的子类提供了比UIScrollView更好的封装，也提供了”翻页”的接口，并提供了一系列定位CollectionView的状态信息。相比UIScrollView,他提供了更深层的封装。同UIPageViewController一样，非常适合本作为本组件的基类。同时，当UICollectionView的一些代理方法不足以提供相关信息时，还可以通过UIScrollView的代理方法来解决。</p>
+<p>采用<code>UIPageViewController</code>作为子类，考虑到使用者需要将其作为subViewController添加到它们的项目中，没有将一个View添加到ViewController中来得直观，综合考虑，PSCarouselView选择了UICollectionView作为其基类。</p>
+<h3 id="实现功能"><a href="#实现功能" class="headerlink" title="实现功能"></a>实现功能</h3><p>如何利用UICollectionView在有限的图片数量下实现无限轮播？我们只需要N+2个Cell就可以实现无限轮播。如图</p>
+<p>将imageURL数组中的URL,扩充为N+2。同时，将imageURLs的最后一个URL作为新数组的第一个URL,将imageURLs的第一个URL作为新数组的最后一个URL。然后在我们的CollectionView滚动到最后一个Cell时，跳转到第二个URL表示的IndexPath即可。自动轮播采用计时器来完成。在实现的时候，我们需要注意一下的几点</p>
+<p>1.计时器的开启与暂停</p>
+<p>自动轮播，通常我们会使用到计时器NSTimer。当我们在页面切换的过程中，需要注意计时器的开启与暂停，不然可能会出现一些不可预料的BUG。而一个ViewController的生命周期，View是不可能知道的。因此我们需要提供两个接口，供使用者开启/暂停计时器。</p>
+<pre><code>- (void)startMoving;
+- (void)stopMoving;
+</code></pre><p>另外，我们还需要注意App的生命周期，当App进入不活动的状态时，我们也需要将计时器暂停，并在回到活动状态时相应地启动。</p>
+<pre><code>#pragma mark - Notification
+//程序被暂停的时候，应该停止计时器
+- (void)applicationWillResignActive
+{
+    [self stopMoving];
+}
+
+//程序从暂停状态回归的时候，重新启动计时器
+- (void)applicationDidBecomeActive
+{
+    if (self.isAutoMoving)
+    {
+        [self startMoving];
+    }
+}
+</code></pre><p>2.用户操作与自动轮播的冲突<br>用户操作时如果轮播还是继续滚动，会导致用户产生不可控的错觉。《iOS Human Interface Guide》中强调过App需要给于用户控制感。因此，在用户手动”翻页”的时候，我们需要暂时暂停一下自动轮播，并在用户手动”翻页”完成后，重新进行轮播。</p>
+<pre><code>//用户手动拖拽，暂停一下自动轮播
+- (void)scrollViewWillBeginDragging:(UIScrollView     *)scrollView
+{
+    [self removeTimer];
+}
+
+//用户拖拽完成，恢复自动轮播（如果需要的话）
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (self.isAutoMoving)
+    {
+        [self addTimer];
+    }
+}
+</code></pre><p>3.图片的缓存与展示<br>如何通过图片的URL来获得相对应的图片，并做好图片的缓存，以实现最大限度地节省流量？这个模块其实应该单独做一个有关图片缓存的库，而不应该包含到View层中来。本作采用了SDWebImage来实现这一功能。有兴趣的朋友可以尝试着实现一个图片缓存库。</p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/hexo-theme-huxblog/2018/03/01/postName/" data-toggle="tooltip" data-placement="top" title="JS map、foreach、reduce、filter的理解">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/hexo-theme-huxblog/2018/03/01/深拷贝与浅拷贝的深入理解/" data-toggle="tooltip" data-placement="top" title="深拷贝与浅拷贝的深入理解">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/hexo-theme-huxblog/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://blog.kaijun.rocks" target="_blank">树树</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://kaijun.rocks/hexo-theme-huxblog/2018/03/01/组件化一点理解/";
+    var disqus_url = "http://kaijun.rocks/hexo-theme-huxblog/2018/03/01/组件化一点理解/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 树树 2019 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/hexo-theme-huxblog/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/hexo-theme-huxblog/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/hexo-theme-huxblog/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://kaijun.rocks/hexo-theme-huxblog/hexo-theme-huxblog/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'huangxuan.me';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '4cc1f2d8f3067386cc5cdb626a202900';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://kaijun.rocks/hexo-theme-huxblog/hexo-theme-huxblog/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
